@@ -1,5 +1,5 @@
 name: BudgetPilot
-version: "0.1.8"
+version: "0.1.9"
 slug: budgetpilot
 description: Household finance tracker
 url: https://github.com/beniusij/budgetpilot
@@ -41,3 +41,5 @@ schema:
   notion_bills_db_id: str
   notion_annual_db_id: str
   notion_accounts_db_id: str
+icon: icon.png
+logo: logo.png
