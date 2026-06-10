@@ -1,0 +1,43 @@
+name: BudgetPilot
+version: "0.1.8"
+slug: budgetpilot
+description: Household finance tracker
+url: https://github.com/beniusij/budgetpilot
+image: ghcr.io/beniusij/budgetpilot
+arch:
+  - aarch64
+ports:
+  3000/tcp: 3001
+ports_description:
+  3000/tcp: Web UI and API
+init: false
+map:
+  - config:rw
+options:
+  notion_token: ""
+  user_1_name: ""
+  user_1_pin: ""
+  user_2_name: ""
+  user_2_pin: ""
+  notion_budget_db_id: ""
+  notion_categories_db_id: ""
+  notion_transactions_db_id: ""
+  notion_savings_db_id: ""
+  notion_goals_db_id: ""
+  notion_bills_db_id: ""
+  notion_annual_db_id: ""
+  notion_accounts_db_id: ""
+schema:
+  notion_token: str
+  user_1_name: str
+  user_1_pin: str
+  user_2_name: str
+  user_2_pin: str
+  notion_budget_db_id: str
+  notion_categories_db_id: str
+  notion_transactions_db_id: str
+  notion_savings_db_id: str
+  notion_goals_db_id: str
+  notion_bills_db_id: str
+  notion_annual_db_id: str
+  notion_accounts_db_id: str
