@@ -27,6 +27,7 @@ options:
   notion_bills_db_id: ""
   notion_annual_db_id: ""
   notion_accounts_db_id: ""
+  notion_reconciliations_db_id: ""
 schema:
   notion_token: str
   user_1_name: str
@@ -41,5 +42,6 @@ schema:
   notion_bills_db_id: str
   notion_annual_db_id: str
   notion_accounts_db_id: str
+  notion_reconciliations_db_id: str
 icon: icon.png
 logo: logo.png

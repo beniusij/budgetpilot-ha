@@ -16,6 +16,7 @@ if [ -f /data/options.json ]; then
   export NOTION_BILLS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_bills_db_id)")"
   export NOTION_ANNUAL_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_annual_db_id)")"
   export NOTION_ACCOUNTS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_accounts_db_id)")"
+  export NOTION_RECONCILIATIONS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_reconciliations_db_id)")"
 fi
 
 export PORT="${PORT:-3000}"
