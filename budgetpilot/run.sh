@@ -19,6 +19,9 @@ if [ -f /data/options.json ]; then
   export NOTION_RECONCILIATIONS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_reconciliations_db_id)")"
 fi
 
+# Persist settings on the add-on's /data volume (survives restarts/rebuilds).
+export BP_SETTINGS_FILE="${BP_SETTINGS_FILE:-/data/settings.json}"
+
 export PORT="${PORT:-3000}"
 export NODE_ENV="production"
 
