@@ -10,6 +10,7 @@ ports:
   3000/tcp: 3001
 ports_description:
   3000/tcp: Web UI and API
+webui: "http://[HOST]:[PORT:3000]"
 init: false
 map:
   - config:rw
