@@ -30,6 +30,9 @@ COPY --from=builder /build/app/dist/client ./dist/client
 # Copy server source
 COPY --from=builder /build/app/src/server ./src/server
 
+# Copy shared code
+COPY --from=builder /build/app/src/shared ./src/shared
+
 # Copy app package.json only — no workspace context so bun installs standalone
 COPY --from=builder /build/app/package.json ./package.json
 
