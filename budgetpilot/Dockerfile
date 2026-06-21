@@ -33,6 +33,9 @@ COPY --from=builder /build/app/src/server ./src/server
 # Copy shared code
 COPY --from=builder /build/app/src/shared ./src/shared
 
+# Copy shared budget helpers (runtime: valueAt, used by the routes)
+COPY --from=builder /build/app/src/budget ./src/budget
+
 # Copy app package.json only — no workspace context so bun installs standalone
 COPY --from=builder /build/app/package.json ./package.json
 
