@@ -25,5 +25,5 @@ export BP_SETTINGS_FILE="${BP_SETTINGS_FILE:-/data/settings.json}"
 export PORT="${PORT:-3000}"
 export NODE_ENV="production"
 
-echo "Starting BudgetPilot on port ${PORT}..."
+echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting BudgetPilot on port ${PORT}..."
 exec bun src/server/index.ts
