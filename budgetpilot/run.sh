@@ -16,6 +16,9 @@ if [ -f /data/options.json ]; then
   export NOTION_BILLS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_bills_db_id)")"
   export NOTION_ACCOUNTS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_accounts_db_id)")"
   export NOTION_RECONCILIATIONS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_reconciliations_db_id)")"
+  export NOTION_INVESTMENT_ASSETS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_investment_assets_db_id)")"
+  export NOTION_ASSET_PRICES_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_asset_prices_db_id)")"
+  export NOTION_INVESTMENT_LOTS_DB_ID="$(bun -e "console.log(require('/data/options.json').notion_investment_lots_db_id)")"
 fi
 
 # Persist settings and sessions on the add-on's /data volume (survives
