@@ -5,6 +5,16 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed — 2026-07-02 (HA add-on changelog now shipped & versioned)
+
+- The root `CHANGELOG.md` is now copied into the Home Assistant add-on on every deploy,
+  so the add-on's Changelog is no longer empty in the HA UI.
+- `bump-version.sh` now cuts a release: it moves the `[Unreleased]` entries beneath a
+  dated `## [<version>]` heading and starts a fresh `[Unreleased]`, so the changelog
+  follows per-version sections from here on.
+
+## [0.1.53] — 2026-07-02
+
 ### Fixed — 2026-07-02 (HA add-on: missing budget-log DB ID, price feed now configurable)
 
 - **The Budget Change Log database ID is now passed to the Home Assistant add-on.**
