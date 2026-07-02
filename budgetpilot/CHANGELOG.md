@@ -5,6 +5,8 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.54] — 2026-07-02
+
 ### Changed — 2026-07-02 (HA add-on changelog now shipped & versioned)
 
 - The root `CHANGELOG.md` is now copied into the Home Assistant add-on on every deploy,
