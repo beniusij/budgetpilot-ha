@@ -1,5 +1,5 @@
 name: BudgetPilot
-version: "0.1.47"
+version: "0.1.52"
 slug: budgetpilot
 description: Household finance tracker
 url: https://github.com/beniusij/budgetpilot
@@ -28,9 +28,12 @@ options:
   notion_bills_db_id: ""
   notion_accounts_db_id: ""
   notion_reconciliations_db_id: ""
+  notion_budget_log_db_id: ""
   notion_investment_assets_db_id: ""
   notion_asset_prices_db_id: ""
   notion_investment_lots_db_id: ""
+  price_feed_enabled: false
+  price_feed_interval_hours: 24
 schema:
   notion_token: str
   user_1_name: str
@@ -45,8 +48,11 @@ schema:
   notion_bills_db_id: str
   notion_accounts_db_id: str
   notion_reconciliations_db_id: str
+  notion_budget_log_db_id: str
   notion_investment_assets_db_id: str
   notion_asset_prices_db_id: str
   notion_investment_lots_db_id: str
+  price_feed_enabled: bool
+  price_feed_interval_hours: int(1,168)
 icon: icon.png
 logo: logo.png
