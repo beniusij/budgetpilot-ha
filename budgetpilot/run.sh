@@ -24,10 +24,12 @@ if [ -f /data/options.json ]; then
   export PRICE_FEED_INTERVAL_HOURS="$(bun -e "console.log(require('/data/options.json').price_feed_interval_hours)")"
 fi
 
-# Persist settings and sessions on the add-on's /data volume (survives
-# restarts/rebuilds, so an update doesn't log everyone out).
+# Persist settings, sessions, and the Notion cache on the add-on's /data volume
+# (survives restarts/rebuilds, so an update doesn't log everyone out or force a
+# cold, hang-prone first load while Notion is slow).
 export BP_SETTINGS_FILE="${BP_SETTINGS_FILE:-/data/settings.json}"
 export BP_SESSIONS_FILE="${BP_SESSIONS_FILE:-/data/sessions.json}"
+export BP_NOTION_CACHE_FILE="${BP_NOTION_CACHE_FILE:-/data/notion-cache.json}"
 
 export PORT="${PORT:-3000}"
 export NODE_ENV="production"

@@ -5,6 +5,38 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed — 2026-07-04 (re-importing a statement restores deleted transactions)
+
+- **Re-importing a statement no longer silently skips transactions you had deleted.**
+  Import duplicate-detection read existing transactions through the stale-while-revalidate
+  cache, so a snapshot captured before a soft-delete could reintroduce the deleted rows
+  into the dedup index — and a re-import matched them by bank transaction ID and skipped
+  them, so the transactions never came back. The import now reads **live, uncached** data
+  (server `getTransactionsForImport()`; the review via `GET /transactions?fresh=1`) and
+  **includes soft-deleted rows**: a re-imported row that matches a previously deleted one
+  is now **resurrected in place** (its `Deleted` flag cleared and amount/date/description
+  refreshed) instead of being skipped or duplicated.
+
+### Fixed — 2026-07-04 (resilient Notion reads, reconcile warning opens its own month)
+
+- **Server-side stale-while-revalidate cache in front of every Notion list read.**
+  Notion's API has intermittent multi-second latency spikes; the cache serves the
+  last-known-good data instantly and refreshes in the background, so a slow spell no
+  longer hangs the dashboard (and a failed refresh keeps serving the cached value).
+  Writes invalidate the affected dataset so edits still show immediately. Tunable via
+  `NOTION_CACHE_TTL_MS` (default 60s).
+- **The Notion cache now persists to disk** (`BP_NOTION_CACHE_FILE`, on the HA add-on's
+  `/data` volume), so a restart or deploy reloads the last-known-good data and serves
+  the first load warm while it revalidates — the dashboard no longer cold-hangs on a
+  slow Notion right after a restart.
+- The Notion client now uses a 20-second request timeout instead of the SDK's
+  60-second default, so a Notion API slowdown surfaces as a quick, retryable error
+  rather than a minute-long hang that leaves pages stuck loading.
+- The Dashboard's "X accounts not reconciled for <month>" warning now opens the Reconcile
+  page on **that** month rather than the current one. The link carries the month as a
+  `?month=YYYY-MM` query param, which Reconcile reads to seed its viewed month; opening
+  Reconcile directly (or via the sidebar) still defaults to the current month.
+
 ## [0.1.54] — 2026-07-02
 
 ### Changed — 2026-07-02 (HA add-on changelog now shipped & versioned)
