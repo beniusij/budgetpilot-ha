@@ -5,6 +5,50 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed — 2026-07-06 (Carry-forward is now a running balance)
+
+- **Carry-forward accumulates across months** instead of resetting each month. At close the stored figure is
+  `net + carry-in` — the month's viewer net **plus** what the previous closed month carried in — so unspent
+  money rolls on (e.g. a £4,000 surplus that funds next month's spending is no longer lost). The dashboard
+  and free-to-spend still read only the immediately-previous closed month, which now already folds in its
+  predecessor. The Review step spells out the arithmetic ("Net £X + £Y brought forward = £Z"). Reopening a
+  month still clears its figure, so re-close months in order to rebuild the chain.
+
+### Fixed — 2026-07-06 (Reconcile shows each account's month-end balance)
+
+- **Reconciling a past month now compares against that month's balance**, not today's. The calculated
+  balance is opening balance + only the transactions dated on/before the month end, so viewing e.g. May
+  with no activity by then shows each account's opening balance rather than its current live balance.
+- The account row shows a **"Recalculating…"** indicator while an entered balance saves and its
+  difference/status are recomputed. A **closed** month collapses the page to a read-only view: no step bar,
+  and the footer offers only **Reopen month**.
+
+### Added — 2026-07-05 (Carry-forward: last closed month flows into the next)
+
+- **Closing a month now carries its surplus/deficit into the next month.** The month's net
+  (income − spending) is stored on its Monthly Budget row (`Carry Forward`) at close and shown on the
+  next month's dashboard — "▲ £X ahead / carried from {month}" (or "▼ behind") — and folded into
+  Free-to-spend. It's **last-month-only and only once closed**: an open prior month carries nothing, and
+  reopening a month clears its carry-forward. The Review step previews the figure before you close.
+- Replaces the previous placeholder that approximated carry-forward from an unmaintained budget field.
+- Requires a **`Carry Forward`** number column on the Monthly Budget Notion database.
+
+### Added — 2026-07-05 (Reconcile Step 2: Review & close the month, with a read-only lock)
+
+- **The Reconcile page can now close a month.** After reconciling, "Next: Review" opens a month-end
+  summary — **viewer-relative like the dashboard** (your income = your money-in in your income
+  categories; your spending = your personal spend + your share of shared spend), plus Needs/Wants/Savings
+  vs targets and any unreconciled accounts — and a **Close month** action. Closing marks the month closed
+  on its Monthly Budget row (`Status=Closed` + `Closed Date`, creating the row if the month has none). A
+  closed month shows a Closed badge and can be **Reopened**.
+- **Investment accounts are excluded from reconciliation** — their balance is holdings market value, not a
+  cash balance to match against a statement, and the fluctuation isn't income until assets are sold.
+- **Closed months are read-only.** The server rejects every transaction mutation (manual add, import,
+  edit, bulk, transfer link/unlink, settle) that targets a closed month with a 409; the Transactions
+  page for a closed month disables its edit controls and shows a read-only banner.
+- Requires a **`Closed Date`** date column on the Monthly Budget Notion database (and `Closed` as a
+  `Status` option).
+
 ### Fixed — 2026-07-04 (re-importing a statement restores deleted transactions)
 
 - **Re-importing a statement no longer silently skips transactions you had deleted.**
