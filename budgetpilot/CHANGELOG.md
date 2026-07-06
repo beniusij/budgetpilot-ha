@@ -5,6 +5,21 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed — 2026-07-06 (Price feed now covers unlisted OEIC funds via FT)
+
+- The automated price feed **auto-updates unlisted OEIC/index funds** (the Moneybox ESG share classes:
+  Emerging Markets Shares, Global Property Shares, Global Shares, Overseas Corporate Bonds) that Yahoo and
+  CNBC both 404 on. `fetchEquityQuote` now falls back to **FT markets data**, which quotes their daily NAV
+  **by ISIN** — so their existing ISIN `Ticker` values just work and they no longer need manual pricing.
+  FT is parsed currency-aware (`GBX` pence → GBP /100, `GBP` as-is) to avoid a 100× error.
+
+### Fixed — 2026-07-06 (Hide investment accounts from the Transactions filter)
+
+- The Transactions **Account** filter no longer lists `Investment` accounts (e.g. eToro, Moneybox).
+  Those accounts never hold Transactions rows — their activity lives in Investment Lots and their
+  cash deposits are intentionally dropped at import — so selecting them always showed an empty list
+  and implied transactions that can't exist.
+
 ## [0.1.55] — 2026-07-06
 
 ### Changed — 2026-07-06 (Carry-forward is now a running balance)
