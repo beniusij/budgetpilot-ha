@@ -5,6 +5,8 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.55] — 2026-07-06
+
 ### Changed — 2026-07-06 (Carry-forward is now a running balance)
 
 - **Carry-forward accumulates across months** instead of resetting each month. At close the stored figure is
