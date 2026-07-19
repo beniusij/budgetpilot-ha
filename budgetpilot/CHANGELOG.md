@@ -5,6 +5,17 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.8] — 2026-07-19
+
+### Changed — 2026-07-19
+
+- **Category filters now mark each option as personal or shared.** The Transactions category filter,
+  the bulk-action "Set category…" dropdown, and the Bills category filter label every option with
+  its scope (`Groceries · Shared` / `Hobbies · Personal`), matching the settings rules editor's
+  indicator style, and sort options by label so same-named categories sit together. The label format
+  lives in one shared helper (`client/categories/categoryOptions.ts`), also reused by the rules
+  editor.
+
 ## [0.2.7] — 2026-07-19
 
 ### Added — 2026-07-19
