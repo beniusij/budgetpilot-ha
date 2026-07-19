@@ -5,6 +5,143 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.7] — 2026-07-19
+
+### Added — 2026-07-19
+
+- **Override false duplicate flags on CSV upload.** A review row flagged as a duplicate by content
+  match (date + amount + description) — e.g. two identical same-day charges like a repeated Autopay
+  payment — now carries an untick option ("duplicate of an existing transaction — untick if this is
+  a separate charge") to mark it "not a duplicate" and import it anyway. Rows matched by the bank's
+  stable transaction id are genuinely the same transaction and stay excluded.
+
+## [0.2.6] — 2026-07-14
+
+### Fixed — 2026-07-14
+
+- **Rule category picker no longer offers a bare duplicate of a scoped category.** A built-in or
+  legacy rule without a `scope` used to add its category as an extra scope-less option (e.g.
+  "Savings" alongside "Savings · Personal"). The picker now shows only the scoped variant(s) —
+  "· Personal", "· Shared", or both when the name exists as both — and keeps a bare option only for
+  a rule category that doesn't exist at all. A scope-less rule pre-selects the single matching
+  variant; when both variants exist it shows the placeholder so the member disambiguates.
+
+### Added — 2026-07-14
+
+- **Duplicate an auto-categorisation rule.** Each rule row has a copy button that inserts an
+  identical rule right below it — a quick starting point for a variant.
+- **Undo for rule deletion.** Deleting a rule shows a toast with an **Undo** button (visible for
+  1 minute) that restores the rule at its original position.
+
+### Fixed — 2026-07-13
+
+- **Auto-rule categories that don't fit a row's split no longer slip through import.** A rule that
+  landed a shared (`Joint`) category onto a personal transaction (or vice-versa) produced a category
+  the split-filtered picker can't show — the row rendered as the empty "Choose category…"
+  placeholder yet wasn't highlighted and didn't block the Import button. `needsCategory` now treats a
+  category invalid for the row's split as **uncategorised**, so the row is flagged and import is
+  blocked until it's set. This also covers flipping a row's split (per-row or **Set all**) after
+  auto-categorisation.
+
+### Added — 2026-07-13
+
+- **Auto-categorisation rules can target an exact shared/personal category.** When the same category
+  name exists as both a shared (`Joint`) and a personal category (e.g. two "Travel"), a rule now
+  pins which one via a `scope` (`Shared`/`Personal`). The Settings → Auto-categorisation rules card
+  shows a shared/personal indicator on each category option and lists the two variants separately, so
+  the choice is explicit; import resolves the rule to that exact category (name + owner).
+
+## [0.2.5] — 2026-07-13
+
+### Fixed — 2026-07-13
+
+- **Duplicate transactions from a single import.** Statement import now de-duplicates a batch
+  against **itself**, not just against transactions already in Notion. Previously the dedup index
+  was built once from existing rows and never updated as the batch created rows, so if the same
+  transaction appeared twice in one file/import both copies were written — silently skewing the
+  account balance (e.g. a doubled Monzo charge). Both the server (`runImport`) and the review step
+  (`buildReviewRows`) now register each row as it's imported, so a repeated `bankTxId` (or identical
+  date+amount+description) later in the same batch is recognised as a duplicate and skipped.
+
+## [0.2.3] — 2026-07-13
+
+### Added — 2026-07-12
+
+- **Customisable auto-categorisation rules.** The "Auto-categorisation rules" card in Settings ›
+  Categories is now editable (previously read-only): add, edit, reorder (first keyword match wins),
+  and delete the keyword→category rules that pre-fill categories during CSV import. Rules are
+  **per-member and private**, seeded from the built-in defaults until you customise them, and stored
+  in the settings JSON (`categoryRules`). CSV import applies the signed-in member's rules; the
+  bank-category fallback stays fixed in code. Keywords match at a **word boundary** (as a whole word
+  or the start of a longer token), so short keywords like `ee` match the token "EE" without also
+  firing on the "ee" inside "coffee".
+
+## [0.2.2] — 2026-07-11
+
+## [0.2.1] — 2026-07-11
+
+### Changed — 2026-07-10
+
+- The dashboard hero band's right side is now a **3-slide auto-rotating carousel** (cycling every 60s) that
+  crossfades between the Needs/Wants/Savings split, the top goals, and an investments summary with a compact
+  sparkline. Dots underneath show the slide count and let you jump directly (which resets the timer).
+- Removed the standalone **Goals** and **Investments** cards from the dashboard grid — both are now surfaced
+  in the hero carousel above.
+
+## [0.2.0] — 2026-07-08
+
+### Changed — 2026-07-08 (Taupa page-by-page restyle & rename)
+
+- Restyled **every page** to the Taupa clay/dark mocks — Accounts, Goals, Bills, Reconcile, Dashboard,
+  Investments, Transactions, Settings and Uploads — built on shared primitives (Card + flush variant,
+  Button, Modal, StatStrip, PageHeader, FilterChip, Segmented, CategoryTag, SplitBadge, a custom clay
+  checkbox and form styles) so the look stays consistent and easy to extend.
+- Adopted the new **coin-mark** brand: favicon, maskable app icons, sidebar logo, and dark PWA theme colour.
+- The Investments **value-over-time** chart is now a hand-rolled clay SVG area chart on a weekly grid with a
+  hover readout; the Transactions ledger is a day-grouped table with a floating bulk-action bar.
+- Renamed the visible app from **BudgetPilot** to **Taupa** (document title, PWA manifest, page titles, Login).
+
+### Fixed — 2026-07-08
+
+- Reconciliation adjustments are dated inside the reconciled month, so past-month accounts reconcile instead
+  of re-showing a discrepancy.
+- The dashboard **Income** figure is again the sum of the month's transactions in your configured income
+  categories (a restyle pass had briefly switched it to the flat configured figure).
+
+### Changed — 2026-07-06 (Adopt the warm-clay dark design system from the mocks)
+
+- The app now wears the **Taupa mocks' warm-clay dark theme** — a single clay accent (`#cd7a52`) on warm
+  near-black surfaces, with **Source Serif 4** display headings, **Hanken Grotesk** body, and **IBM Plex
+  Mono** figures. It's a **dark-only** theme (the mocks define no light variant): the Tailwind `dark`
+  variant is switched to a class strategy and pinned on `<html class="dark">`. The look is landed
+  **centrally** by remapping Tailwind's colour and font tokens (`indigo-*` → clay, `gray-*`/`white` →
+  warm neutrals, the font families), so every screen — including those without a mock — inherits it without
+  per-component edits. **Note:** this replaces the previous indigo-on-gray light/dark system; light mode is
+  no longer offered. (Supersedes the earlier light-mode muted-text contrast tweak.)
+
+### Changed — 2026-07-06 (UX-review change set: Transactions, Investments, Reconcile, contrast)
+
+- **Transactions:** the header gains an **Upload statements** button that links to the Uploads page
+  (`/upload`), the canonical import flow. The inline **category cell** is now quiet — borderless and
+  transparent until hover or keyboard focus, when it reveals the select chrome (with a focus-visible ring),
+  so a full ledger no longer reads like a form. The bulk-action bar's **credit-card row** appears only when
+  the selection includes a credit-card transaction. The per-row **settle** button reveals on row
+  hover/focus-within and shows a focus-visible ring so it's reachable by keyboard. The header
+  **transaction count** now derives from the displayed (filtered) rows so it always agrees with the footer,
+  and the footer net uses the same `+£/−£` signed convention as the **Net** tile.
+- **Investments:** the header actions now have a clear hierarchy — **Add asset** is the primary button,
+  **Refresh** collapses to an icon-only control (with an `aria-label`/tooltip), and **Import statement** and
+  **Add trade** are secondary. The header **Record price** button is removed; recording a price is a per-row
+  action on each holding, which opens the same modal.
+- **Info tooltips:** the summary/stat tiles on **Investments**, **Goals** and **Bills** gain `InfoHint`
+  explanations describing how each figure is worked out (Transactions and the Dashboard already had them).
+- **Reconcile:** the header badge and the step-1 footer note derive from **one source** (reconciled /
+  discrepancy / pending) so they always agree, with the footer showing the full breakdown. **Next: Review**
+  is disabled until every account reconciles, with a tooltip that explains the gate.
+- **Contrast:** the muted `gray-400/500` text tiers are stepped up one shade in light mode (via the colour
+  tokens, so every `text-gray-400/500` utility benefits) to clear WCAG AA for small functional text on light
+  surfaces; the Tailwind defaults are restored under the dark media query where they already pass.
+
 ### Fixed — 2026-07-06 (Price feed now covers unlisted OEIC funds via FT)
 
 - The automated price feed **auto-updates unlisted OEIC/index funds** (the Moneybox ESG share classes:
