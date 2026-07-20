@@ -5,6 +5,16 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.11] — 2026-07-20
+
+### Fixed — 2026-07-20 (settings number fields save once, on blur)
+
+- **Editing a number on Settings → Household no longer saves on every keystroke.** Your income,
+  "Your share" and the Needs/Wants/Savings targets now commit when the field loses focus (or on
+  Enter) instead of per character, so typing `60` fires one save and one "Settings saved" toast
+  rather than two of each — and no longer briefly persists the intermediate `6`. Escape abandons
+  an edit, and clearing a field reverts it instead of saving `0`.
+
 ## [0.2.10] — 2026-07-20
 
 ### Added — 2026-07-20 (investments gated behind Experimental features)
