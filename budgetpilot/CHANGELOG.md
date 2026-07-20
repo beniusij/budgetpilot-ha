@@ -5,8 +5,6 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
-## [0.2.11] — 2026-07-20
-
 ### Fixed — 2026-07-20 (settings number fields save once, on blur)
 
 - **Editing a number on Settings → Household no longer saves on every keystroke.** Your income,
