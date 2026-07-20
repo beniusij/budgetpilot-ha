@@ -5,6 +5,86 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.9] — 2026-07-20
+
+### Fixed — 2026-07-19 (stale bill cost / category buffer display)
+
+- **Bills and categories now show the cost that's actually in effect this month.** A cost change
+  recorded ahead of time (e.g. "£300 from July", saved in June) updated the derived budgets on
+  time but the Bills page kept showing the old amount once the month arrived — the current-value
+  copy on the Notion row was only re-written when the cost history changed, so it froze at the
+  pre-change value. `GET /bills` and `GET /categories` now resolve the today-effective amount
+  from the Budget Change Log on every read, falling back to the stored value only for rows with
+  no applicable history.
+
+### Fixed — 2026-07-19 (Revolut dates, same-account transfer links)
+
+- **Revolut imports now carry the date you paid, not the date the payment settled.** The parser
+  preferred the CSV's `Completed Date`, but card payments settle overnight and the Revolut app
+  lists them by `Started Date` — so imported transactions appeared a day late and didn't line up
+  with the bank's own history. New imports now use `Started Date`; rows imported before this fix
+  keep their settlement date (re-importing an overlapping statement would read those rows as new,
+  so correct any that matter by editing, not re-importing).
+- **Two legs of a transfer in the same account can now be linked.** The manual "Link as transfer"
+  modal only offered counterpart transactions from *other* accounts, so a same-account pair — e.g.
+  Revolut's "Balance migration to another region or legal entity" debit + credit — couldn't be
+  linked and skewed spending. Same-account counterparts are now offered and rank by the usual
+  amount/date closeness.
+
+### Fixed — 2026-07-19 (settle modal save)
+
+- **Saving a settlement is now a single request.** The modal used to chain two mutations (the
+  settle link, then a bulk clear of the covered rows' stored status), so the Save button briefly
+  re-enabled mid-save, two success toasts appeared, and the modal lingered open well after the
+  list had updated. The server now clears the covered rows' status inside
+  `POST /transactions/:id/settle`, so one "Settlement saved" toast shows, the button stays
+  disabled while saving, and the modal closes as soon as the refreshed transactions land.
+
+### Fixed — 2026-07-19 (repayments)
+
+- **Settled credit-card purchases no longer leak back into Pending/Outstanding.** The Notion API
+  truncates a relation list to its first 25 ids, so a settlement covering a whole month of card
+  purchases silently lost the rest — those rows re-derived as Pending/Outstanding and reappeared in
+  the Repayment filter views. The server now completes any truncated `Settles` relation via the
+  page-property endpoint.
+- **Shared transfers to a credit card no longer show "Outstanding".** The bank-repayment exclusion
+  matched a single "Transfers" category id, but scoped categories mean a personal and a shared
+  "Transfers" can coexist — inflows filed under the other one were mistaken for merchant refunds.
+  Repayment badges, month summaries, and category spend now match every category named "Transfers"
+  (`categoryIdsNamed`), whichever scope it belongs to.
+
+### Changed — 2026-07-19 (settle modal)
+
+- **Settle modal candidates are scope-matched.** The "Settle purchases" picker now lists only
+  pending purchases whose Personal/Shared scope matches the repayment being settled (a scope-less
+  payment still lists both sides; rows an existing settlement already covers stay listed for
+  editing).
+
+### Changed — 2026-07-19
+
+- **Scope-filtered category options.** When the Scope filter is set to Personal or Shared, the
+  Category filter on the Transactions and Bills pages now lists only that side's categories, and a
+  selected category that falls out of scope resets to All when the scope changes.
+- **"Split" renamed to "Scope" in the UI.** The Transactions filter chip and the Add-transaction
+  modal's Shared/Personal field are now labelled "Scope", matching the Bills page and the
+  transactions table column. (The bill modal's Proportional/Fixed "Split" field — how a shared
+  bill divides between members — keeps its name.)
+- **Bills monthly-equivalent total shows pence.** The filter bar's monthly-equivalent figure now
+  renders with two decimal places instead of whole pounds.
+
+### Fixed — 2026-07-19
+
+- **Category hover tooltips now show the real monthly budget.** The category tooltip on the
+  Transactions ledger and the Bills table showed "none set" for categories whose budget lives in
+  the Budget Change Log or comes from linked bills (e.g. Groceries at £1,000/mo), because it read
+  the raw `Monthly Target` property. It now shows the month-effective budget
+  (`categoryBudgetForMonth`: smoothed bills + budget-log buffer).
+
+- **Bill icons with long keys no longer fail validation.** Saving a bill with an icon whose key is
+  longer than 8 characters (e.g. Education's `education`, `subscription`, `entertainment`) was
+  rejected with "icon must be a short string (≤ 8 chars) or null" — a leftover limit from the emoji
+  era. The server now accepts icon values up to 32 characters.
+
 ## [0.2.8] — 2026-07-19
 
 ### Changed — 2026-07-19
