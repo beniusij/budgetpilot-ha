@@ -5,6 +5,31 @@ All notable changes to BudgetPilot are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.10] — 2026-07-20
+
+### Added — 2026-07-20 (investments gated behind Experimental features)
+
+- **The Experimental features toggle now works, gating the Investments feature.** With the
+  toggle off (the default), the Investments nav item disappears, `/investments` redirects to
+  the dashboard, the hero carousel drops its Investments slide, and the Accounts page hides
+  investment accounts — no Investment group or stat tile, net worth counts cash and credit
+  only, and the account modal offers cash types only. The choice persists per browser.
+
+### Added — 2026-07-20 (light theme + user-menu toggles)
+
+- **Dark mode toggle.** The user menu (avatar in the sidebar) now has a Dark mode switch: the
+  warm-clay theme gains a light "warm paper" variant, driven by re-pointed semantic colour
+  tokens. Dark stays the default; the choice persists per browser and is applied before first
+  paint so there's no flash. An Experimental features switch sits alongside it (visual only for
+  now).
+
+### Changed — 2026-07-20 (upload page is cash-CSV only)
+
+- **The Upload page no longer offers investment accounts.** Broker statements (Moneybox PDF /
+  eToro XLSX) import solely through the Investments page's Import statement modal; `/upload` now
+  lists cash accounts only, its wizard handles just the bank-CSV flow, and its Add account modal
+  offers cash account types only (investment accounts are created from the Accounts page).
+
 ## [0.2.9] — 2026-07-20
 
 ### Fixed — 2026-07-19 (stale bill cost / category buffer display)
