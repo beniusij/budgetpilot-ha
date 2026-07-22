@@ -5,6 +5,16 @@ All notable changes to Taupa are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.13] — 2026-07-22
+
+### Fixed — 2026-07-22 (Upload page hides broker accounts)
+
+- **The Upload page no longer lists Moneybox/eToro accounts.** It previously filtered out only
+  `Investment`-typed accounts, so a broker-serviced account typed e.g. Savings still appeared even
+  though its statement (Moneybox PDF / eToro XLSX) can only import via the Investments page's
+  Import statement modal. Account filtering now also excludes any account whose **service** is a
+  broker (new `uploadableAccounts` helper in `upload/uploadFormat.ts`, with tests).
+
 ## [0.2.12] — 2026-07-22
 
 ### Added — 2026-07-22 (free-to-spend explain panel)
