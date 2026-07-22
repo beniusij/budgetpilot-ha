@@ -1,9 +1,153 @@
 # Changelog
 
-All notable changes to BudgetPilot are documented here. The format follows
+All notable changes to Taupa are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Most recent first.
 
 ## [Unreleased]
+
+## [0.2.12] — 2026-07-22
+
+### Added — 2026-07-22 (free-to-spend explain panel)
+
+- **Clicking the dashboard's cash-anchored Free-to-spend figure now opens an "explain" panel** — a
+  modal itemising the exact arithmetic behind the number: every Current Account feeding spendable
+  cash (with the Joint share weighting shown), every category still reserving budget this month
+  (its `budget − spent × share` working, grouped Personal / Joint with subtotals), and the closing
+  `cash − reserved = free to spend` line. The breakdown rows are the same values the figure sums,
+  so the panel always reconciles with the hero to the penny — the number can be read, not trusted.
+
+### Changed — 2026-07-22 (cash-anchored free-to-spend, Phase 2)
+
+- **Once a household start month is set, the dashboard's Free-to-spend is now cash-anchored**:
+  `spendable cash − this month's unspent commitments`, instead of the plan-relative
+  `income − plan + carry`. Spendable cash is your **Current-Account** balances (viewer-weighted,
+  Joint at your split share). **Goals play no part in the formula**: savings are informed by
+  transactions — a contribution is a Saving-category transaction that already leaves the account
+  (dropping out of spendable cash), a dip is an inflow that returns to it, and money held outside
+  the tracked Current Accounts was never in the pool — so subtracting goal balances on top would
+  double-count. Budgeted savings are still reserved through the unspent-commitments term (a
+  Saving-type category's budget is held back until spent). Because it reads your actual balances,
+  a salary paid at the end of last month already counts — no waiting for an income transaction —
+  which fixes the month-end-pay boundary artifact where a freshly-started month showed a large
+  false deficit. Carry-forward stops being a stored figure: the Hero instead shows a **"cash
+  carried in" pill** — your spendable cash at the first instant of the viewed month (excluding a
+  month-boundary salary your pay schedule attributes to the viewed month: that's this month's pay,
+  not leftover), context only, already inside the balance the figure reads — and switches its ⓘ
+  explanation. Until a start
+  month is configured, the previous plan-relative figure (and its stored carry-forward pill) is
+  unchanged. New pure helpers `accounts/spendableCash.ts` and `dashboard/remainingCommitments.ts`
+  (both unit-tested). See `docs/plans/household-start-cash-f2s.md`.
+
+### Added — 2026-07-22 (household start month — forward-only budgeting, Phase 1)
+
+- **A household can now set a start month** (Settings → Household, admin only) — the first month
+  Taupa budgets. It's a forward-only floor: transactions and months before it are ignored
+  everywhere (balances, spend, income, reconcile), the month navigation on the dashboard,
+  Transactions and Reconcile can't step earlier than it, and CSV rows dated before it are shown in
+  the import review as "before start" and skipped rather than imported. Each account's **opening
+  balance** is now read as its real balance on the first day of that month (the account modal's
+  hint reflects this). Leaving the start month unset keeps today's behaviour (full history). This
+  is Phase 1 of the cash-anchored free-to-spend work — see
+  `docs/plans/household-start-cash-f2s.md`.
+- Account `Type` is now narrowed to a known set (`Current Account` / `Credit Card` / `Savings` /
+  `Investment`); an unrecognised/legacy value reads as untyped. This underpins the upcoming
+  spendable-cash calc.
+
+### Fixed — 2026-07-21 (Adjustments can no longer be assigned to normal transactions)
+
+- **The reconcile-only `Adjustments` system category is now hidden from every category
+  *assignment* picker** — the Add/Edit inline select, the bulk "Set category…" action, the Bill
+  modal, the CSV upload review, and the auto-categorisation rule target. Previously it was
+  offered like any other category, so a real transaction could be filed under it (and would then
+  show up when filtering by Adjustments, and be wrongly excluded from income/spending totals). It
+  stays available in the **filter** dropdowns so you can still audit adjustment rows. Note: this
+  prevents *new* mis-assignments; any transaction already filed under Adjustments needs
+  recategorising in Notion.
+
+### Fixed — 2026-07-21 (reconciliation records respect account privacy)
+
+- **A member could no longer see or edit another member's personal-account reconciliation
+  records.** The `/accounts` list was already privacy-filtered, but `GET /reconciliations`
+  returned every record for the month — including the account name and calculated/actual
+  balances of the other member's personal accounts — and `POST`/`PATCH /reconciliations` had no
+  ownership check, so a crafted request could write a reconciliation against an account the caller
+  doesn't own. All three endpoints now gate on account visibility (own or Joint), matching the
+  existing bills and accounts routes; Joint (shared) records stay visible to both members.
+
+### Changed — 2026-07-21 (month close is now per member, with an account-aware read-only lock)
+
+- **Each member closes their own view of a month.** Closing was household-wide — one `Status = Closed`
+  locked the month for both, so if one member closed before the other had finished reconciling, the
+  second was stuck. Now the close state is stored per member (`Status Primary` / `Status Partner`);
+  the dashboard, Reconcile and the read-only lock all read the viewer's own state, and reopening only
+  touches the reopening member. The **read-only lock is now account-aware** to match: editing a
+  **personal-account** transaction is blocked once *its owner* has closed the month; a **shared
+  (Joint) account** transaction is blocked once *either* member has closed (the close confirmation
+  warns about this). The server enforces it on every transaction mutation; the Transactions page's
+  read-only banner follows the viewer's own close. **Requires a Notion schema change:** rename the
+  Monthly Budget `Status` column to `Status Primary` and add a `Status Partner` select (same
+  Draft/Active/Closed options); reads fall back to the legacy name, so existing closed months survive
+  as the primary member's, and no history re-close is needed.
+
+### Changed — 2026-07-21 (carry-forward is now stored per member)
+
+- **Each member's month-end carry-forward is kept separately.** The running balance was already
+  computed per member (it's viewer-relative income − spending), but it was saved to a single
+  shared Monthly Budget column — so whoever closed the month last silently overwrote the other's
+  figure. It now writes to the closing member's own column (`Carry Forward Primary` /
+  `Carry Forward Partner`) and each member reads their own; a member the prior month never closed
+  shows no carry (no fallback to the other's balance). Reopening clears only the reopening member's
+  column. This corrects a latent "last closer wins" bug and is the groundwork for per-member month
+  close. **Requires a Notion schema change:** rename the Monthly Budget `Carry Forward` column to
+  `Carry Forward Primary` and add a `Carry Forward Partner` number column (reads fall back to the
+  legacy name, so existing values survive; no history re-close needed).
+
+### Changed — 2026-07-21 (income is attributed to the pay period it funds)
+
+- **Once you set a pay schedule (Settings → Household), a month-boundary salary counts in the
+  month it funds, not the month it lands.** The dashboard **Income** tile and the Reconcile
+  month-end review now select income by pay period (payday→payday) from your full transaction
+  history, so if you're paid on the last workday of the month your salary shows up at the start of
+  the *next* month instead of the income reading ≈£0 until payday. "Free to spend" becomes income
+  − commitments rather than a carry-forward artefact. The Income tile notes when a salary was
+  shifted in (e.g. "incl. salary paid 30 Jun"). **With no pay schedule set, nothing changes** —
+  income stays calendar-month, as before. The dashboard and Reconcile switch together so the net
+  that feeds carry-forward stays consistent; after enabling a schedule, re-close reconciled months
+  in order so each carry-forward rebuilds on the corrected month. Pure helpers `periodIncomeTotal`
+  / `shiftedPayInto` in `transactions/summary.ts`, unit-tested incl. the calendar-month no-op.
+
+### Added — 2026-07-21 (per-member pay schedule in Settings — config only)
+
+- **Settings → Household now has a "Your pay schedule" card**, per member: a pay cycle (Calendar
+  month · Day of month · Last workday), a pay category (pre-seeded to your `Salary` category), and
+  payday overrides for months your normal rule doesn't fit (e.g. an earlier December payday). This
+  is **configuration only** — no figure changes yet; it lays the groundwork for attributing pay to
+  the month it funds rather than the month it lands in (see the pay-cycle design spec). Weekly,
+  biweekly and irregular earners leave it on Calendar month and nothing changes for them.
+
+### Changed — 2026-07-20 (free to spend follows actual spend once it passes the budget)
+
+- **The dashboard's "Free to spend" figure now falls as you spend beyond your budget.** It was
+  always `income − budgeted commitment ± carry-forward`, which ignored actual transactions — so
+  mid-month it could sit *above* your real account balance once you'd spent money the budget
+  didn't anticipate. The claim on income is now `max(budgeted, actual spend so far)`: early in the
+  month the budget still holds the figure steady, but once real spend overtakes it the figure
+  tracks money genuinely gone. Taking the larger of the two (rather than adding them) keeps a paid
+  bill from being counted twice, since it appears in both. Calculation extracted to
+  `dashboard/freeToSpend.ts` with unit tests; the tile's ⓘ hint copy updated to match.
+
+### Fixed — 2026-07-20 (dashboard tile hints describe what the figures actually are)
+
+- **The Income tile's ⓘ hint claimed the figure came from Settings.** It doesn't — it sums the
+  month's transactions in your configured income *categories*, which is a running total that sits
+  near zero until your pay lands. The Settings income figure is a separate input that drives the
+  needs/wants/savings targets and household split. The hint now says so, instead of describing a
+  number the tile never showed.
+- **The "Free to spend" hint now explains the carry-forward's role and the account scope** — it
+  spans every account, so it isn't meant to match any single account's balance, and on a month-end
+  pay cycle the carry-forward carries the figure until payday.
+
+## [0.2.11] — 2026-07-20
 
 ### Fixed — 2026-07-20 (settings number fields save once, on blur)
 
