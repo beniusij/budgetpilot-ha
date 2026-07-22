@@ -5,6 +5,24 @@ All notable changes to Taupa are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.14] — 2026-07-22
+
+### Added — 2026-07-22 (recurring-payment detection)
+
+- **The Bills page now detects recurring payments and suggests them as bills.** A pure client
+  detector (`bills/detectRecurring.ts`, mirroring the transfer-detection pattern) groups regular
+  outflows by normalised merchant + account, classifies their cadence
+  (Weekly/Monthly/Quarterly/Yearly) and, for groups not matching a registered bill, shows a banner
+  → stepped review modal → "Add as bill" opens the bill form prefilled (name, latest amount,
+  frequency, account, next-expected due date, owner from the transactions' split). Transfers,
+  settlement payments and income are excluded structurally; "Not a bill" dismissals persist in
+  localStorage keyed by merchant identity, so new imports don't resurface them.
+- **Price-change flags on registered bills.** When a detected recurring charge matches an existing
+  bill but its latest amount disagrees with the bill's current cost beyond a small tolerance, the
+  bill's row shows a warn badge (`▲ £15.99`) with the details in a tooltip. Updating the bill's
+  cost clears the flag automatically; a × dismisses a one-off, and a *further* price change
+  re-flags.
+
 ## [0.2.13] — 2026-07-22
 
 ### Fixed — 2026-07-22 (Upload page hides broker accounts)
