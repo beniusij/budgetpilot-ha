@@ -5,6 +5,8 @@ All notable changes to Taupa are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.5] — 2026-07-23
+
 ## [0.3.4] — 2026-07-23
 
 ## [0.3.3] — 2026-07-23
