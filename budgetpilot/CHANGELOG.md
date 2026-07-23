@@ -5,6 +5,131 @@ All notable changes to Taupa are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-07-23
+
+## [0.3.1] — 2026-07-23
+
+## [0.3.0] — 2026-07-23
+
+### Added — 2026-07-22 (in-app household setup)
+
+- **First-run household setup runs in the app** — a fresh install with no configured members
+  shows a setup wizard instead of the PIN screen. `GET /api/auth/setup-status` reports whether
+  setup is needed; `POST /api/auth/setup` (guarded by that status so it can't reset an existing
+  household) creates one or two members with PINs, makes the first the Admin, and logs them
+  straight in. Client: a new `Setup.tsx` wizard (name + PIN, optional second member) that `Login`
+  renders when setup is needed, plus `setup()` on the auth context. `USER_n_NAME`/`USER_n_PIN`
+  env vars are now optional — configure the household via env **or** in-app setup. Verified
+  end-to-end: a genuinely fresh install (no env) creates the household through the wizard, both
+  members log in, and settings key by the new names.
+
+### Changed — 2026-07-22 (DB-backed member auth)
+
+- **PIN authentication now runs against the members table, and the household no longer touches the
+  environment at all.** A new `members-store.ts` owns member listing and PIN auth; `pin.ts` hashes
+  PINs with salted scrypt (`salt:hash`), so raw PINs never touch the database. `POST /api/auth/login`
+  validates the PIN via `authenticateByPin` and returns the matching member. Members (names, roles,
+  and PINs) are created entirely through in-app first-run setup — **nothing about the household is
+  read from env** (`USER_n_NAME`/`USER_n_PIN` are gone, along with the HA add-on's `user_n_*`
+  options). A fresh install has no members, so it reports `needsSetup` and shows the wizard.
+  `readMembers`/`isAdmin` moved from `settings-helpers` to the DB-backed store, so `GET /settings`
+  reports the real household. **`.env` is now optional** — the app boots and runs without one.
+  Verified end-to-end: a fresh boot with a populated `.env` present seeds zero members and goes
+  straight to setup; a wrong PIN is rejected.
+
+### Changed — 2026-07-22 (member genericisation)
+
+- **Member names are no longer hardcoded.** The `ImportedBy` type and every owner type
+  (`AccountOwner`/`CategoryOwner`/…) are now member-name strings (`Owner = MemberName | 'Joint'`),
+  not the `'Juozas' | 'Partner'` union. Members are seeded from the configured household
+  (`USER_1_NAME`/`USER_2_NAME`, Admin first) rather than a hardcoded constant, and `resolveMember`
+  returns the login name directly (it is the member name). The two-member finance-split model is
+  preserved: "primary" = the Admin member, resolved by role rather than by name. Server-side, the
+  month-close lock, settings store, and validation iterate the configured members; settings
+  per-member records (`nwsTargets`, `reconcileTolerancePounds`) are filled per member on read from
+  new `DEFAULT_NWS_TARGET`/`DEFAULT_RECONCILE_TOLERANCE_POUNDS` constants. Client-side, a new
+  `settings/household.ts` (`isPrimaryMember`/`primaryMemberName`/`partnerMemberName`) replaces
+  every `member === 'Juozas'` check, reading the member roles from the settings response; the
+  bills table's second-share column and per-member labels now show real names. Verified
+  end-to-end by booting a differently-named household (Emma/Viena): members seed from env,
+  ownership resolves to the caller, and settings key by the real names. (In-app household setup
+  and DB-backed PIN auth land next.)
+
+### Changed — 2026-07-22 (settings & sessions folded into the DB)
+
+- **Auth sessions and settings now live in the SQLite database** — the last two sidecar JSON
+  files are gone, leaving a single file to back up. The `sessions` table (reshaped in migration
+  `0001`) is the source of truth for tokens (`sessions-store.ts` — no in-memory Map; sliding
+  two-week expiry, expired rows purged at startup). Settings are normalised across five tables
+  (`household_settings`, `finance_profile_entries`, `finance_profile_members`, `member_settings`,
+  `member_income_categories`) via `settings-store.ts`, which assembles/disassembles the nested
+  `Settings` shape and maps per-member values through the members table. Income-category ids are
+  FK-checked against `categories` (stale ids dropped). A one-shot `migrateSettingsFileToDb()` runs
+  at startup: an existing `settings.json` is folded into the tables on first boot after the
+  upgrade (legacy scalar-tolerance and flat income/split shapes included), then ignored.
+  `BP_SESSIONS_FILE` is removed; `BP_SETTINGS_FILE` is now only the one-shot migration source.
+  Verified end-to-end: a legacy settings.json migrates correctly and a login token survives a
+  restart.
+
+### Removed — 2026-07-22 (Notion layer deletion)
+
+- **The Notion layer is gone.** Deleted `NotionAdapter`, `notion-transforms`, the
+  stale-while-revalidate Notion cache, the helpers' Notion property builders, the month-close
+  column constants, the legacy `migrate:budget-log` and diagnostic scripts, and the one-shot
+  Notion→SQLite importer (its job is done; recoverable from git history). `@notionhq/client` is
+  no longer a dependency. `routes/notion.ts` is renamed to `routes/data.ts`. All `NOTION_*` env
+  vars and HA add-on options are removed — the add-on now only needs users, the price feed
+  toggle, and the `/data` volume. Docs rewritten accordingly (`docs/data-model.md` now describes
+  the SQLite model).
+
+### Changed — 2026-07-22 (SQLite route cutover)
+
+- **Every data route now serves from the embedded SQLite database** via the domain-typed
+  `DataAdapter` — Notion no longer sits in any request path (no more third-party latency or rate
+  limits). The server opens the DB, applies pending migrations, and seeds members at startup
+  (`initDataAdapter`); the HA add-on persists it at `/data/budgetpilot.db` via `run.sh`. The
+  transaction mutation/import services and the price feed were rewritten to the domain seam
+  (`bulkPatch`, domain `runImport`, upserting `createAssetPrice`), the denormalised
+  current-value re-sync is gone (values resolve from the budget log at read time), and the dead
+  `/savings` route was removed. Route tests now drive real Express over HTTP against a real
+  in-memory SQLite adapter — no storage mocks (76 tests). The Notion adapter, transforms, and
+  cache remain in-tree only for the one-shot importer and are deleted next.
+
+### Added — 2026-07-22 (SQLite datastore scaffolding)
+
+- **Drizzle + SQLite scaffolding for the datastore migration off Notion** (design:
+  `docs/plans/sqlite-schema.md`, decisions settled 2026-07-22). The full 22-table schema lands as
+  `app/src/server/db/schema.ts` with generated migration `0000_init` (money as integer pence,
+  generic `members` table, CHECK constraints on closed vocabularies, partial unique indexes for
+  bank-id dedup and budget-log one-entry-per-month). `openDatabase()` opens `BP_DB_FILE`
+  (default `app/data/budgetpilot.db`) via `bun:sqlite` with WAL + foreign-key pragmas and copies
+  the file aside before applying any pending migration. Constraint behaviour is covered by
+  `schema.test.ts` (runs on `better-sqlite3`, since vitest runs on Node). Nothing is wired to
+  routes yet — Notion still serves all app data.
+- **`SqliteAdapter` behind a new domain-typed `DataAdapter` seam.** The Notion adapter's surface
+  is Notion-shaped (property payloads in, raw pages out), so the migration seam is a new
+  `adapters/DataAdapter.ts` interface speaking the domain types directly — amounts in pounds,
+  owners as member names, typed inputs from `types/import.ts`. `adapters/SqliteAdapter.ts`
+  implements it over Drizzle: pence and member-id conversion at the boundary, per-member month
+  close/carry-forward and bill shares as member-keyed rows, settlements and goal funding via join
+  tables, category budgets / bill costs resolved live from the budget change log (create upserts
+  one entry per parent per month), and archive semantics (`archived_at`, added to migration 0000)
+  for categories/accounts/bills/goals so "delete" hides rows that transactions still reference.
+  Covered by 20 behavioural tests in `SqliteAdapter.test.ts`; routes still run on Notion until
+  the importer and cutover land.
+- **Notion → SQLite importer** (`bun run --cwd app import:notion`). Pure core
+  (`db/notion-import.ts`) + CLI shell (`scripts/import-notion.ts`): reads all 11 live Notion
+  databases, preserves page ids verbatim (so settlements, adjustment ids, and the category ids in
+  `settings.json` survive), fetches archived-but-referenced pages individually and imports them
+  as archived rows, and repairs dirty data with a warning per case — dangling references cleared
+  or dropped, duplicate `(account, bankTxId)` cleared on later rows, duplicate budget-log /
+  reconciliation rows resolved last-wins, duplicate feed prices resolved freshest-wins. Refuses a
+  non-empty target database. `getTransactionsForImport` now completes truncated `Settles` lists
+  (previously only `getTransactions` did), and `NotionAdapter` gained a single-page `getAccount`.
+  Validated against the real household workspace: all foreign keys intact, 512 transactions
+  (112 soft-deleted), 78 settlement links, 40 warnings — every one a known benign duplicate.
+  14 behavioural tests in `notion-import.test.ts`.
+
 ## [0.2.14] — 2026-07-22
 
 ### Added — 2026-07-22 (recurring-payment detection)
