@@ -10,7 +10,9 @@ COPY tsconfig.json ./
 COPY app/package.json ./app/
 COPY infra/package.json ./infra/
 
-RUN bun install --frozen-lockfile
+# Retry once: bun occasionally fails to extract a large tarball (e.g. pdfjs-dist)
+# on the arm64 builder — a transient unpack hiccup that a second pass clears.
+RUN bun install --frozen-lockfile || bun install --frozen-lockfile
 
 COPY app/ ./app/
 
@@ -35,6 +37,10 @@ COPY --from=builder /build/app/src/shared ./src/shared
 
 # Copy shared budget helpers (runtime: valueAt, used by the routes)
 COPY --from=builder /build/app/src/budget ./src/budget
+
+# Copy shared types — needed at runtime for value exports (e.g. JOINT), not just
+# the erased `import type` surface (month-close.ts imports JOINT at runtime).
+COPY --from=builder /build/app/src/types ./src/types
 
 # Copy app package.json only — no workspace context so bun installs standalone
 COPY --from=builder /build/app/package.json ./package.json
