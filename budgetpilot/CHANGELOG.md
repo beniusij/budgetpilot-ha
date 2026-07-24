@@ -1,11 +1,12 @@
 # Changelog
 
-## [0.3.8] — 2026-07-23
+## [0.3.10] — 2026-07-24
 
-### Fixed — 2026-07-23 (free to spend and savings dips)
+### Changed — 2026-07-24 (free to spend breakdown)
 
-- **Dipping into a savings pot now correctly lifts free to spend.** When you draw more back out
-  of a category than you put in over a month, that category no longer holds any of your money in
-  reserve — the cash you pulled back flows straight into free to spend instead of being quietly
-  set aside again. The "How free to spend is worked out" breakdown now lists only categories with
-  spending still to come, and each line's budget, spend and share add up to the figure shown.
+- **The "how free to spend is worked out" panel has been redesigned.** It now opens with a bar
+  showing your spendable cash split into what's genuinely free and what your budgets are still
+  holding back, so the shape of the month reads at a glance. Underneath, the accounts holding
+  that cash are listed as before, and every budget still reserving money gets its own progress
+  bar showing how much of it you've spent — with your share of a joint budget spelled out on the
+  line. If you split a joint account, a short note up top says what share you cover.
