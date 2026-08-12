@@ -1,11 +1,9 @@
 # Changelog
 
-## [0.3.21] — 2026-08-09
+## [0.3.22] — 2026-08-12
 
-### Changed — 2026-08-09
+### Fixed — 2026-08-12 (Amex: two identical charges no longer import as one)
 
-- **Bills due in the next day or two now say so in words.** The Upcoming bills card on the dashboard reads "Due today" and "Due tomorrow" instead of showing a date you have to work out for yourself; anything further ahead keeps its date as before. The countdown on the Bills page picks up the same wording, so "in 1 day" now reads "tomorrow".
-
-### Fixed — 2026-08-09
-
-- **Dates no longer shift by a day if you are travelling.** Opening Taupa anywhere west of the UK — a trip to the US, say — showed every stored date one day early: a transaction on the 29th read "28 Apr", and its day heading named the wrong weekday with it. Transaction dates and day headings, bill due dates, contract expiry dates, goal target and completion dates, reconciliation close dates and the investment statement import all now show the date as recorded, wherever you happen to be reading them.
+- **Two charges on the same day, for the same amount, at the same merchant are no longer treated as one.** Booking two identical flights on the same card on the same day left only one of them in Taupa, so the card balance came out short by the missing charge. American Express prints a reference number against every transaction and Taupa was throwing it away, leaving it to compare the date, amount and description alone — by which measure the two were indistinguishable. It now reads that reference, so two genuinely separate charges stay separate.
+- **When two rows still look alike, the import asks rather than guesses.** If the references differ, the second row arrives ready to import and needs a category before you can continue, so you see it. If neither row carries a reference — Lloyds, Revolut and Nationwide statements don't provide one — it is still flagged as a duplicate and skipped by default, with the same tickbox as before to say it is a separate charge.
+- **Re-importing an old Amex statement repairs your history and adds anything that went missing.** Transactions imported before this change have no reference stored against them. Dropping the same statement in again quietly attaches the right reference to each one — your categories, scopes and notes are untouched — and brings in any charge that was wrongly skipped at the time. The review step shows these as "linked", and the summary reports how many were repaired alongside how many were added.
