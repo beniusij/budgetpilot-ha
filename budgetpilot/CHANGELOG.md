@@ -6,6 +6,7 @@
 
 - Households that pool their money can now set a keep-back — the share of pay each member holds back rather than pooling — as a percentage or a fixed monthly amount, with a household default that any member can override for themselves.
 - The dashboard now shows each member what their pay was this month and how much of it is theirs to keep.
+- Switching a household to pooled money now adds a salary category for each member, so two salaries paid into the same joint account can be told apart. Any salary category you already had is left exactly as it was, history included.
 
 ### Changed — 2026-08-13
 
