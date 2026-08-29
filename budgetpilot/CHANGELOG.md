@@ -1,7 +1,8 @@
 # Changelog
 
-## [0.3.38] — 2026-08-29
+## [0.3.37] — 2026-08-29
 
-### Added — 2026-08-29
+### Changed — 2026-08-29
 
-- **Categories and rules are now separate settings tabs, and the categories list can be filtered and sorted.** Settings has a **Categories** tab and a **Rules** tab where it used to have one crowded page. Categories gains a search box — matching a category's name or its Need/Wants/Savings type — and a Shared/Personal scope filter, with a count of how many rows a filter is hiding. Every column sorts: click a heading to sort by it, click again to reverse. The list still opens exactly as before, with your personal categories first, so sorting is something you turn on rather than something you land in.
+- **The split ratio now sits at the top of the right-hand column in Household settings.** In a household that splits shared costs proportionally, how a bill divides is a rule the app applies rather than something you record about your own pay, so it moves across to sit with the other rules. Nothing about the setting itself changed.
+- **The "Spending by category" card on the dashboard has lost its subtitle.** It repeated the Shared/Personal switch sitting next to the heading, so the card now leads with its title alone.
