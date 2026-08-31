@@ -1,7 +1,7 @@
 # Changelog
 
-## [0.3.50] — 2026-08-31
+## [0.3.51] — 2026-08-31
 
 ### Fixed
 
-- The calendar button on every date field now shows in a colour you can see against the theme you are using — white on the dark theme, dark on the light one. It was previously drawn in a fixed near-black that all but vanished in dark mode.
+- **The scope buttons on the Transactions selection bar now hide when they would do nothing.** Selecting several rows that are all already personal still offered "Mark personal", which rewrote them to the value they already had and reported it as a change. The bar now offers an action only when at least one selected row would actually move; a selection with a mix of both still offers both. The same applies to "Exclude from figures" and "Include in figures".
