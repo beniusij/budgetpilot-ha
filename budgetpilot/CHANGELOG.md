@@ -1,7 +1,7 @@
 # Changelog
 
-## [0.3.54] — 2026-09-01
+## [0.3.55] — 2026-09-01
 
-### Fixed
+### Changed
 
-- **The ▲/▼ change markers on a bill now stay on the same line as the amount they describe.** In a narrow Total column the marker was pushed onto the line above its figure, where it read as a separate, arrowless number. The column now widens to fit the marker and the total together.
+- **Every column on the Bills table can now be sorted.** Account, Scope, Paid by and the two share columns were the only headers that did nothing when clicked; all of them now sort, so there is no longer a rule to remember about which ones respond. Each sorts by what the column actually shows — Account by the account's name, Scope with shared bills first, and each share column by its own figure rather than by the bill's total.
