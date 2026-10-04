@@ -16,7 +16,9 @@ RUN bun install --frozen-lockfile || bun install --frozen-lockfile
 
 COPY app/ ./app/
 
-RUN cd app && bun run build
+# The add-on is the alpha channel (client/lib/buildChannel.ts): it shows work in
+# progress, such as sync, which the public app does not.
+RUN cd app && VITE_TAUPA_CHANNEL=alpha bun run build
 
 # ── Stage 2: Runtime ──────────────────────────────────────────────────────────
 FROM oven/bun:1-alpine
