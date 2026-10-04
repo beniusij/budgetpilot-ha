@@ -1,7 +1,8 @@
 # Changelog
 
-## [0.4.15] — 2026-10-04
+## [0.4.16] — 2026-10-04
 
-### Fixed
+### Internal
 
-- **Only one machine fetches investment prices once your devices sync.** A second device connected to your Home Assistant box no longer fetches prices of its own; it gets them from the box with each sync. If both fetched, each would record its own price for the same day, and the next day the two would refuse to sync with each other at all. Pressing **Refresh prices** on a connected device now says the prices come from your Home Assistant box. A machine that isn't syncing fetches exactly as before.
+- **Sync groundwork: a device can ask your Home Assistant box for a pairing code.** The box writes the code to the add-on's log, beside the name and network address of the device that asked, and only that device can use it. Nothing changes in the app yet; this is for testing pairing against a real box.
+- Roadmap: the account-cap pricing idea is recorded as tentative and parked, with its open questions kept for when pricing is next looked at.
