@@ -1,11 +1,11 @@
 # Changelog
 
-## [0.4.49] — 2026-11-03
+## [0.4.50] — 2026-11-03
 
 ### Fixed
 
-- **Amex card payments no longer import twice.** Amex sometimes gives a payment a new reference number after it first appears, so a later statement read the same payment as a second one, and deleting the copy didn't stick. Taupa now recognises Amex transactions by their date, amount and merchant instead of Amex's reference, while still keeping two genuinely identical charges on the same day apart. Your existing Amex transactions are updated the first time you open this version, and copies of a payment you had already deleted stay deleted.
+- **Sync no longer asks about records both devices changed the same way.** When two devices made the identical change while apart — importing the same statement, or applying the same update to your records — sync used to list every one of them as a disagreement, even though both versions were the same. It now settles them on its own, and clears any such disagreements already waiting. You are still asked whenever the two versions really differ.
 
-### Changed
+### Internal
 
-- **Shorter wording for possible duplicates.** When an imported row looks like a transaction you already have, its checkbox now just says "Duplicate": leave it ticked to skip the row, or untick it to import the row anyway. The note above the table that counts rows already imported is shorter too.
+- The roadmap marks the Amex duplicate-payment fix as done.
