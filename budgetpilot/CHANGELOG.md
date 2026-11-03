@@ -1,7 +1,7 @@
 # Changelog
 
-## [0.4.51] — 2026-11-03
+## [0.4.52] — 2026-11-03
 
-### Fixed
+### Changed
 
-- **Answering a sync disagreement no longer shows a database error.** Choosing the hub's version of a transaction could fail when another copy of the same bank transaction, still waiting for its own answer, held its bank reference — and the screen showed the raw database message. Taupa now tells you which disagreement to answer first, and any other failure shows a plain "Something went wrong" instead.
+- **The Overview remembers Personal or Shared while Taupa is open.** Switch the Overview to Shared, look at Bills, come back, and it is still on Shared. Reopening Taupa starts on your "Free to Spend opens on" setting as before.
