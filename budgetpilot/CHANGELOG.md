@@ -1,19 +1,11 @@
 # Changelog
 
-## [0.4.48] — 2026-11-03
+## [0.4.49] — 2026-11-03
 
-### Added
+### Fixed
 
-- **Terms of service.** Taupa now has terms, linked from the foot of Settings, and setting up Taupa (creating a household or joining one) now asks you to agree to them first. You can read them without leaving setup. They say plainly that Taupa is a tracking tool, not financial advice, that every figure is worked out only from what you have imported up to your latest statement, and that investment figures are not for a tax return. They are governed by the law of England and Wales; who offers Taupa is still to be confirmed.
+- **Amex card payments no longer import twice.** Amex sometimes gives a payment a new reference number after it first appears, so a later statement read the same payment as a second one, and deleting the copy didn't stick. Taupa now recognises Amex transactions by their date, amount and merchant instead of Amex's reference, while still keeping two genuinely identical charges on the same day apart. Your existing Amex transactions are updated the first time you open this version, and copies of a payment you had already deleted stay deleted.
 
 ### Changed
 
-- **A synced device now shows what it pulled in without a reload.** When a sync brings in changes from the hub, the page you are on updates by itself within half a minute or so, and so does answering a sync disagreement. This only applies in builds where sync is switched on.
-- **Taupa no longer contacts Google to load its fonts.** The app's typefaces now come with the app itself, so opening Taupa sends nothing to Google or any other outside service. Everything looks exactly as before, and the fonts work offline too.
-
-### Internal
-
-- The roadmap marks font bundling as done.
-- The roadmap marks the terms of service as done.
-- The privacy policy text is written and on the roadmap as done; it is not shown in the app yet.
-- The roadmap now lists the follow-ups to the privacy policy: showing it in the Settings menu, adding the company's details once it is registered, and a lawyer's review before public launch.
+- **Shorter wording for possible duplicates.** When an imported row looks like a transaction you already have, its checkbox now just says "Duplicate": leave it ticked to skip the row, or untick it to import the row anyway. The note above the table that counts rows already imported is shorter too.
