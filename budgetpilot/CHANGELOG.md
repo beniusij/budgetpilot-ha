@@ -1,13 +1,16 @@
 # Changelog
 
-## [0.4.53] — 2026-11-04
+## [0.4.54] — 2026-11-05
+
+### Added
+
+- **A new Analytics page shows how your spending and income change month by month.** Spending is one bar per month, split by category, over the last 3, 6 or 12 months, using exactly the figures of the Overview's Spending by category card. Hover or tap a bar for the month's figures, and click a category in it to open those transactions. Click a category in the legend under the chart to see only that one, and again to see them all, or Shift+click to pick several. Income is a line across the same months, counted the way the Overview counts it. A household that shares costs in proportion chooses Personal or Shared, in the same place as on the Overview, and the choice carries between the two pages. Find it in the sidebar, under Goals.
 
 ### Changed
 
-- **The Overview's Spending by category now shows a + / − beside the Category heading instead of the words "Show more" / "Show less".** The + lists every category, the − goes back to just those past half their budget. Screen readers still hear "Show more" / "Show less". Where nothing is past half spent and there is no heading, the words stay.
-- **The statement review table no longer scrolls inside the page.** On the Upload page the transactions list now runs its full height, so a long statement has one scrollbar, the page's, instead of two.
-- **The share-of-the-bills line on the Overview now reads as a sentence.** Under the Shared totals of Spending by category it said "Your share of the bills £655 of £1,310 shared monthly"; it now says "Your share of the bills is £655 of £1,310 shared monthly". Only the wording changed: the amount, rounding and month are as before.
+- **A hover balloon too tall to fit above what you are pointing at now opens below it.** A long one, such as a month's spending listed by category, could run off the top of the window; it now opens under the bar, or whatever it describes, when there is more room there.
+- **In the test builds, Experimental features now also turns on features still being built.** In the Home Assistant add-on, the beta app and a developer's own copy, switching on Experimental features in the user menu shows every unfinished feature too, so there is nothing more to find in the Developer page. A feature switched off by hand there stays off. The public app is unchanged: Experimental features still means Investments and Loans, and nothing unfinished.
 
-### Internal
+### Fixed
 
-- **The roadmap notes the full-height statement review table as done.** The Upload section of the product feedback note has a ticked entry for the review table no longer scrolling inside the page.
+- **On the Developer page, each feature flag's name and description show beside its switch again.** The As shipped / On / Off switch spread across the whole row and squeezed them out; it now keeps its own width.
