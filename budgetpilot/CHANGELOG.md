@@ -1,8 +1,12 @@
 # Changelog
 
-## [0.4.58] — 2026-11-06
+## [0.4.59] — 2026-11-06
 
-### Fixed
+### Changed
 
-- **The Investments value chart, and the investments sparkline on the dashboard, now start from the first day all your holdings have a market price.** Before that the line showed what you had paid in, so it jumped up the week real prices arrived, as if you had made a sudden gain. If you hold something that has never been priced, the chart asks you to record a price for it instead of drawing a line that leaves it at cost.
-- **On Investments, the value chart's line no longer runs underneath its £ labels.** The labels now sit in their own space to the left of the chart, and the line stops short of the right edge, so both ends read cleanly.
+- **Deleting an investment now deletes its trades with it.** Before, the app refused until you had deleted every trade one by one. The confirmation says how many trades will go. If someone else in your household holds the same investment in their own account, the delete is refused, so their private trades are never removed without them seeing it.
+- **Free to spend no longer adds a sentence under it when the figure reads negative.** The line ("The shared budgets hold back £x more than is in the joint accounts.", or "This month's budgets hold back £x more than you have." under Personal) repeated what the minus figure already says, and it was wrong whenever a card owed money, because it blamed the budgets for a gap that was partly the card. The figure keeps its minus sign and red colour, and "How this is worked out" still shows where the gap comes from.
+
+### Internal
+
+- **The product notes now say broker statements are imported from Upload statements.** The notes on the upload and investments pages, statement import and portfolio tracking still said they came in through the Investments page. The roadmap and feedback list record the investments chart and import fixes as done.
