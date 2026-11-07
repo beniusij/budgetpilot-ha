@@ -1,11 +1,13 @@
 # Changelog
 
-## [0.4.61] — 2026-11-06
+## [0.4.62] — 2026-11-07
 
 ### Added
 
-- **Search your investment holdings.** The Holdings table on the Investments page has a search box at the right of its title. Type part of an investment's name, its ticker or ISIN, or the name of an account to see only the investments it finds, such as everything held in your ISA. Capitals don't matter. A count shows how many investments match, and the total at the foot of the table adds up only the ones shown, labelled "Matching". The figures at the top of the page and the chart still cover everything. Press ⌘F or Ctrl+F to jump to the box.
+- **Pick an icon for each loan.** The loan form has an icon button beside the name, with the same icons you can give a bill, such as a house for a mortgage or a car for car finance. The icon shows on the loan's card. Loans without one keep the card's usual icon.
 
 ### Changed
 
-- **The figure above the Investments value chart follows the account you pick.** Choosing one account above the Value over time chart now shows that account's value and gain above the line, the same figure as its balance on the Accounts page. Before, the line changed but the figure above it stayed on the whole portfolio. All accounts shows the whole portfolio, as before, and the four figures at the top of the page always do.
+- **Spending by category is wider on the dashboard.** Spending by category now takes two thirds of the width and Upcoming bills the other third, so the table has more room. With all three summary cards showing, Needs, wants and savings and Goals sit directly above Spending by category and Investments directly above Upcoming bills. On a narrower window the cards still stack as before.
+- **The loan option is now called "Interest only".** On the loan form the tick box reads "Interest only", with what it means in a short note underneath: the balance falls due in full at the end of the term. A loan's card says "Interest only" too.
+- **Loan amounts are easier to read as you type them.** When adding or editing a loan, the amount and the monthly payment put in a comma every three digits as you type, so 185000 reads as 185,000. Both start empty on a new loan instead of showing a 0 you had to delete first. One left empty still saves as £0. The interest rate keeps its 0, which means interest-free.
