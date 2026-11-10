@@ -1,13 +1,16 @@
 # Changelog
 
-## [0.4.67] — 2026-11-07
+## [0.4.68] — 2026-11-10
+
+### Fixed
+
+- **Importing a bank file that adds references no longer creates extra copies of repeated charges.** If you had imported two identical charges on one day (two coffees, say) from a statement that had no transaction references, a later export that did carry them used to match only the first and add a third charge, so spending and balances came out too high. Each reference now attaches to its own existing transaction, and nothing new is added.
 
 ### Internal
 
-- **A glossary of product terms and a list of working terms, and rules for writing docs.** The vault gains a Glossary of the product's vocabulary, a new working-terms page covers the engineering and workflow words, and the agent instructions say how to keep docs short, in one place and in the shared terms.
-- **The engineering docs, the Claude Code tooling notes and the project skills are tightened.** Repeated explanations are merged into one place, history that no longer describes how things work is cut, and every rule, number and link is kept.
-- **The page-by-page feature docs drop history that no longer describes how things work.** Notes on what a page used to do are rewritten as what it does, the reason for each rule is kept, and long explanations that repeated each other point to one place.
-- **The design plans for sync and the household start are tightened.** Superseded decisions and notes on what changed are rewritten as what is true now, and the working rules each plan repeated point to the project instructions instead.
-- **A handful of product notes in the vault are tightened.** Notes on what used to be true are rewritten as what is true now, and the open-banking provider list that was told in two places now lives in one.
-- **The roadmap records the account cards.** The Accounts page note now describes cards under a heading for each type.
-- **The longest notes in the feature docs are split into one point per rule.** Paragraphs of several hundred words on the Dashboard, Transactions, Bills, Settings, Reconcile, Loans and Investments pages are now short bullets, one rule each, with the wording unchanged apart from one repeated sentence removed.
+- **Three more end-to-end tests drive the real app in a browser.** One imports a bank statement and then the same file again, and fails if the second import adds anything. One picks a category and uses Reset on the Transactions filters, and "Show them" for rows still waiting for a category. One follows a category on the Overview into the Transactions page. Each test now gets its own app and database, so they run side by side, and a household is put in place for them behind the scenes rather than by clicking through the first-run screens every time. Nothing changes in the app.
+- **A first end-to-end test now drives the real app in a browser.** It builds the app, starts it on a database made just for the run, sets up a two-person household through the first-run screens, signs out, checks the sign-in screen is still showing after a reload, and signs back in. It never touches your own data or reaches the internet. Nothing changes in the app: it is the first of a set meant to catch what only a real browser sees, and it is run by hand rather than as part of the normal check.
+- **The roadmap records the first part of multiple statement formats per bank.** The feedback note says what has landed and that the new formats are still to come; the board card stays open until they do.
+- Which banks can be imported from a PDF statement now sits in one table instead of a check for a single bank, ready for more statement formats. Nothing changes for you today: Nationwide still takes a PDF or a CSV, and every other bank a CSV.
+- **Importing a bank statement in a second format is now checked against the first.** A new test imports the same Nationwide period as a CSV and as a PDF, in either order, and fails if the second import adds any transaction or changes the balance. It also checks that a part-month CSV followed by the full-month PDF adds only the missing transactions, that a statement's rows add up to its printed opening and closing balances, and that a file from the wrong bank is still rejected. It records one known gap, that a transaction the PDF prints with a payment reference still reads as new when the CSV was imported first. Nothing changes in the app; every format added to a bank from now on has to pass the same check.
+- **The second-format check now follows what the import really does.** It counted an extra charge in a second export, one carrying its own reference, as already imported when the import would add it, and it attached two references to the same stored transaction. Each reference now attaches to its own stored transaction and such a charge counts as added, so the check can no longer pass a second format that would double a balance.
